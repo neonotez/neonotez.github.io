@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://neonotez.github.io/sitemap.xml
