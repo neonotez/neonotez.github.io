@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="google-site-verification" content="233SonpoRf0-4dunGutXuk4dw5KJLSkcTGwB9zeF-3c" />
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self';
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' data:;
+  font-src 'self';
+  connect-src 'self';
+  frame-ancestors 'none';
+  base-uri 'self';
+  form-action 'self';
+  object-src 'none';
+  upgrade-insecure-requests;
+">
+
+<title>NeonoteX</title>
+  <meta name="description" content="NeonoteX is an open-source offline note-taking app designed for efficient task management. Originally built for debt collectors, it allows users to create customized notes, schedule tasks, and track commitments with ease." />
+   <meta property="og:title" content="NeonoteX" />
+   <meta property="og:description" content="NeonoteX is an open-source offline note-taking app designed for efficient task management. Originally built for debt collectors, it allows users to create customized notes, schedule tasks, and track commitments with ease." />
+   <meta property="og:type" content="website" />
+   <meta property="og:url" content="https://neonotex.github.io/" />
+   <meta property="og:image" content="icons/favicon-96x96.png" />
+
+<link rel="canonical" href="https://neonotex.github.io/" />
+
+  <link rel="icon" type="image/png" href="icons/favicon-96x96.png" sizes="96x96" />
+  <link rel="icon" type="image/svg+xml" href="icons/favicon.svg" />
+  <link rel="shortcut icon" href="icons/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png" />
+
+<style>
+
+:root {
+  --bg: #11433d;
+  --light: #f5f5f5;
+  --red: #cc9503;
+  --green: #299d8b;
+  --base-font: 20px;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: "Courier New", monospace;
+  image-rendering: pixelated;
+  -webkit-font-smoothing: none;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--light);
+  font-size: var(--base-font);
+}
+
+.app-header {
+  padding: 12px;
+  background: #111;
+  border-bottom: 4px solid var(--green);
+}
+
+.app-header h1 {
+  font-size: 2rem;
+  margin: 0 0 4px 0;
+  color: var(--green);
+}
+
+.app-version {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+#overview {
+  padding: 12px;
+}
+
+.promise {
+  border: 2px solid var(--green);
+  margin-bottom: 10px;
+  padding: 10px;
+  background: #123d37;
+  border-radius: 6px;
+}
+
+.promise-header strong {
+  color: #a1e5dc;
+  font-size: 1.2rem;
+}
+
+.promise-details {
+  margin-top: 8px;
+  border-top: 2px dashed var(--red);
+  padding-top: 8px;
+  overflow-wrap: break-word;
+}
+.promise-broken {
+  margin-top: 8px;
+  border-top: 2px dashed var(--red);
+  padding-top: 8px;
+  font-size: 16px;
+  overflow-wrap: break-word;
+}
+
+.tabs {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.tab {
+  flex: 1;
+  padding: 10px;
+  background: var(--red);
+  border: 2px solid #000;
+  color: var(--light);
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.tab.active {
+  background: var(--green);
+}
+
+.tab:active {
+  transform: scale(1.08);
+  box-shadow: inset 0 0 6px rgba(170, 240, 230, 0.7);
+}
+
+footer {
+  margin-top: 16px;
+  padding: 12px;
+  text-align: center;
+  opacity: 0.6;
+  font-size: 0.9rem;
+  border-top: 2px solid var(--green);
+}
+
+.image-slider {
+  margin: 20px auto;
+  max-width: 100%;
+  min-height: 400px;
+  max-height: 700px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #123d37;
+  border: 2px solid var(--green);
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+}
+
+.slider-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+
+.slide {
+  width: 100%;
+  height: 100%; 
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  display: flex;
+  flex-direction: column; 
+  justify-content: center;
+  align-items: center;      
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.slide.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.slide img {
+  width: 85%;     
+  height: auto;
+  object-fit: contain; 
+  border-radius: 10px;
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .slide img {
+    width: 86%;       
+  }
+
+  .slide-info {
+    margin-bottom: 5px; 
+  }
+  .slide-info h3 {
+    font-size: 1.3rem;
+  }
+  .slide-info p {
+    font-size: 0.9rem;
+  }
+}
+
+.slide-info {
+  max-width: 300px;
+  width: 100%;
+  text-align: center;
+  color: var(--light);
+  text-shadow: 1px 1px 6px #000;
+  pointer-events: none;
+}
+
+.slide-info h3 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.slide-info p {
+  margin: 5px 0 0 0;
+  font-size: 1rem;
+}
+.slide-info h3,
+.slide-info p {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.slide-info h3,
+.slide-info p {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.slide-info p::-webkit-scrollbar {
+  width: 4px;
+}
+
+.slide-info p::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.4);
+  border-radius: 10px;
+}
+
+
+.prev,
+.next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.5);
+  color: var(--light);
+  border: none;
+  padding: 10px;
+  font-size: 2rem;
+  cursor: pointer;
+  border-radius: 50%;
+  user-select: none;
+}
+
+.prev { left: 10px; }
+.next { right: 10px; }
+
+.prev:hover, .next:hover {
+  background: rgba(0,0,0,0.8);
+}
+
+
+</style>
+</head>
+
+<body>
+
+<header class="app-header">
+  <h1>NeonoteX</h1>
+  <div class="app-version">App Latest version: v1.1.2</div>
+</header>
+
+<main id="overview">
+
+  <section class="promise">
+    <strong>Offline. Secure. Retro.</strong>
+    <p>
+      Track promises, manage accounts, monitor collections,
+      and analyze receivables — fully offline.
+    </p>
+      <div class="promise-header">
+            <strong>Official Links</strong>
+            </div>
+  <div class="promise-broken">
+        <ul>
+      <li>Website: https://neonotez.github.io</li>
+      <li>App: https://neonotex.github.io</li>
+      <li>Source code: https://github.com/Neonotex/neonotex.github.io</li>
+    </ul>
+
+  </div>
+   <div class="tabs">
+<button class="tab active" id="launchApp">Launch App</button>
+  <button class="tab" id="sourceCode">Source Code</button>
+</div>
+  </section>
+  
+  <section class="image-slider">
+  <div class="slider-wrapper">
+    <div class="slide active" data-title="Promise & Task System" data-desc="Dashboard where you can view today's tasks, track all promises, and see completed tasks or promises at a glance.">
+      <img src="image1.jpg" alt="NeonoteX" />
+    </div>
+    <div class="slide" data-title="Accounts & Clients" data-desc="A place to store tasks or information with no due dates. You can create unlimited accounts, and within each account, add unlimited clients—think of accounts as folders and clients as the information stored inside them.">
+      <img src="image2.jpg" alt="NeonoteX" />
+    </div>
+    <div class="slide" data-title="Collections & Receivables" data-desc="A payment tracking feature designed for debt collectors. Add a client’s name, balance, and last payment date to easily monitor payment history and records.">
+      <img src="image3.jpg" alt="NeonoteX" />
+    </div>
+    <div class="slide" data-title="Monthly Quotas" data-desc="Part of the collection feature for debt collectors. This section lets you set monthly collection quotas, track progress in real time, and view the overall performance and standing of all handled clients.">
+      <img src="image4.jpg" alt="NeonoteX" />
+    </div>
+        <div class="slide" data-title="Notepad" data-desc="A built-in notepad that lets you write and organize any information freely. All notes are automatically saved in real time, ensuring your content is always preserved without manual saving.">
+      <img src="image5.jpg" alt="NeonoteX" />
+    </div>
+   <div class="slide" data-title="Security" data-desc="This section allows you to enable password protection to secure your app from unauthorized access, especially when it contains sensitive information.">
+      <img src="image6.jpg" alt="NeonoteX" />
+    </div>
+       <div class="slide" data-title="Backup & Restore" data-desc="This section lets you securely back up and restore your app data. NeonoteX is a client-based app with no central server, meaning all data is stored locally on your device. If your browser or app data is cleared, all stored information will be erased. Creating backups ensures you can fully restore your data at any time.">
+      <img src="image5.jpg" alt="NeonoteX" />
+    </div>
+  </div>
+  <div class="slide-info">
+    <h3 class="slide-title"></h3>
+    <p class="slide-desc"></p>
+  </div>
+  <button class="prev">&#10094;</button>
+  <button class="next">&#10095;</button>
+</section>
+
+  
+  <section class="promise">
+    <div class="promise-header">
+      <strong>What is NeonoteX?</strong>
+    </div>
+    <div class="promise-details">
+      <p>
+        NeonoteX is an open-source offline note-taking app designed for efficient task management. Originally built for debt collectors, it allows users to create customized notes, schedule tasks, and track commitments with ease.
+      </p>
+      <p>
+        It combines task tracking, client management, receivables,
+        quotas, notes, and encrypted backups in one fast app.
+      </p>
+    </div>
+  </section>
+
+  <section class="promise">
+    <div class="promise-header">
+      <strong>Promise & Task System</strong>
+    </div>
+    <div class="promise-details">
+      <ul>
+        <li>Date-based promises</li>
+        <li>Today / All / Done grouping</li>
+        <li>Expandable details</li>
+        <li>Inline completion</li>
+        <li>Smart search</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="promise">
+    <div class="promise-header">
+      <strong>Accounts & Clients</strong>
+    </div>
+    <div class="promise-details">
+      <ul>
+        <li>Multiple accounts</li>
+        <li>Unlimited clients</li>
+        <li>Client notes</li>
+        <li>Fast search</li>
+        <li>Safe delete</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="promise">
+    <div class="promise-header">
+      <strong>Collections & Receivables</strong>
+    </div>
+    <div class="promise-details">
+      <ul>
+        <li>Track balances & payments</li>
+        <li>No negative balances</li>
+        <li>Aging analysis</li>
+        <li>3 / 6 / 9 / 12 Month Non-Moving</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="promise">
+    <div class="promise-header">
+      <strong>Monthly Quotas</strong>
+    </div>
+    <div class="promise-details">
+      <ul>
+        <li>Set monthly targets</li>
+        <li>Running totals</li>
+        <li>Completion percentage</li>
+        <li>Account activity tracking</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="promise">
+    <div class="promise-header">
+      <strong>Notepad</strong>
+    </div>
+    <div class="promise-details">
+      <ul>
+        <li>Multiple notes</li>
+        <li>Live character limits</li>
+        <li>Safe delete</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="promise">
+    <div class="promise-header">
+      <strong>Security & Backup</strong>
+    </div>
+    <div class="promise-details">
+      <ul>
+        <li>Optional app lock</li>
+        <li>AES-256 encrypted backup</li>
+        <li>Portable restore</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="promise">
+    <div class="promise-header">
+      <strong>Offline-First PWA</strong>
+    </div>
+    <div class="promise-details">
+      <ul>
+        <li>No internet required</li>
+        <li>Installable app</li>
+        <li>Manual updates</li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  NeonoteX • Offline • Secure • Retro • Your Data, Your Rules and its fully open-source<br>
+  Developer: KevinDGreat 
+</footer>
+<script src="main.js"></script>
+</body>
+</html>
